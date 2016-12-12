@@ -11,10 +11,10 @@ import ColumnsTable
 import Report
 
 
-def create_report_categorical(df, excluded_columns=[]):
+def create_report_categorical(df, excluded_columns=[], include_types=[object]):
     'return tuple (Report instance, names of columns in the report)'
     description = df.describe(
-        include=[object],
+        include=include_types,
     )
     print description
     r = ReportCategorical()
@@ -30,10 +30,10 @@ def create_report_categorical(df, excluded_columns=[]):
     return r, included_columns
 
 
-def create_report_numeric(df, excluded_columns=[]):
+def create_report_numeric(df, excluded_columns=[], include_types=[np.number, object]):
     'return tuple (Report instance, names of columns in the report)'
     description = df.describe(
-        include=[np.number],
+        include=include_types,
     )
     print description
     r = ReportNumeric()
@@ -48,14 +48,13 @@ def create_report_numeric(df, excluded_columns=[]):
             included_columns.append(column_name)
     return r, included_columns
 
+
 def replace(df, old_name, new_name, new_value):
     'return new DataFrame with one column replaced'
     df1 = df.copy()
     df2 = df1.drop(old_name, 1)  # 1 ==> drop column (as opposed to row)
     df2.insert(0, new_name, new_value)
     return df2
-
-
 
 
 ColumnSpec = collections.namedtuple(
