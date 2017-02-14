@@ -11,7 +11,7 @@ class MaybeNumber(object):
             self.value = None
         elif isinstance(value, MaybeNumber):
             self.value = value.value
-        elif np.isnan(value):
+        elif isinstance(value, float) and np.isnan(value):
             self.value = None
         else:
             self.value = value
@@ -26,11 +26,23 @@ class MaybeNumber(object):
             return self.value is None
         return self.value == other.value
 
+    def __abs__(self):
+        if self.value is None:
+            return MaybeNumber(None)
+        else:
+            return MaybeNumber(abs(self.value))
+
     def __add__(self, other):
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
             return MaybeNumber(self.value + other.value)
+
+    def __lt__(self, other):
+        if self.value is None or other.value is None:
+            return MaybeNumber(None)
+        else:
+            return MaybeNumber(self.value < other.value)
 
     def __sub__(self, other):
         if self.value is None or other.value is None:
@@ -79,6 +91,17 @@ class TestMaybeNumber(unittest.TestCase):
             x = MaybeNumber(value)
             self.assertEqual(x.value, expected)
 
+    def test_abs(self):
+        tests = (
+            (0, 0),
+            (1, 1),
+            (-1, 1),
+            (None, None),
+        )
+        for test in tests:
+            a, expected_value = test
+            self.assertEqual(abs(MaybeNumber(a)), MaybeNumber(expected_value))
+
     def test_add(self):
         tests = (
             (1, 2, 3),
@@ -100,6 +123,19 @@ class TestMaybeNumber(unittest.TestCase):
         for test in tests:
             a, b, c = test
             self.assertEqual(MaybeNumber(a) - MaybeNumber(b), MaybeNumber(c))
+
+    def test_lt(self):
+        tests = (
+            (1, 2, True),
+            (2, 1, False),
+            ('ab', 'ac', True),
+            (None, 2, None),
+            (1, None, None),
+        )
+        for test in tests:
+            a, b, c = test
+            print a, b, c
+            self.assertEqual(MaybeNumber(a) < MaybeNumber(b), MaybeNumber(c))
 
     def test_div(self):
         tests = (
