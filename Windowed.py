@@ -10,6 +10,9 @@ class Windowed(object):
         self.window_size = window_size
         self.items = collections.deque([], window_size)
 
+    def __repr__(self):
+        return 'Windowed(%s' % self.items
+
     def append(self, item):
         self.items.append(item)
 
