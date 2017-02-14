@@ -9,6 +9,8 @@ class MaybeNumber(object):
     def __init__(self, value):
         if value is None:
             self.value = None
+        elif isinstance(value, MaybeNumber):
+            self.value = value.value
         elif np.isnan(value):
             self.value = None
         else:
@@ -68,6 +70,7 @@ class TestMaybeNumber(unittest.TestCase):
             (10.0, 10.0),
             (None, None),
             (np.nan, None),
+            (MaybeNumber(10.), 10.0),
         )
         for test in tests:
             if verbose:
