@@ -1,4 +1,5 @@
 import datetime
+import os
 import sys
 import pdb
 
@@ -17,7 +18,10 @@ class Logger(object):
         def path(s):
             return directory('log') + s + '-' + datetime.datetime.now().isoformat('T') + '.log'
         self.terminal = sys.stdout
-        clean_path = logfile_path.replace(':', '-') if base_name is None else path(base_name)
+        if os.name == 'posix':
+            clean_path = logfile_path.replace(':', '-') if base_name is None else path(base_name)
+        else:
+            clean_path = logfile_path
         self.log = open(clean_path, logfile_mode)
 
     def write(self, message):
