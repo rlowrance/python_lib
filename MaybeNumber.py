@@ -1,6 +1,8 @@
 from __future__ import division
 
+import math
 import numpy as np
+import pdb
 import unittest
 
 
@@ -65,11 +67,17 @@ class MaybeNumber(object):
             return MaybeNumber(self.value * other.value)
 
     def mean(self, other):
-        sum = self.add(other)
+        sum = self + other
         if sum.value is None:
             return MaybeNumber(None)
         else:
             return (self + other) / MaybeNumber(2.0)
+
+    def sqrt(self):
+        if self.value is None:
+            return MaybeNumber(None)
+        else:
+            return MaybeNumber(math.sqrt(self.value))
 
 
 class TestMaybeNumber(unittest.TestCase):
@@ -134,7 +142,6 @@ class TestMaybeNumber(unittest.TestCase):
         )
         for test in tests:
             a, b, c = test
-            print a, b, c
             self.assertEqual(MaybeNumber(a) < MaybeNumber(b), MaybeNumber(c))
 
     def test_div(self):
@@ -160,6 +167,20 @@ class TestMaybeNumber(unittest.TestCase):
             a, b, c = test
             self.assertEqual(MaybeNumber(a) * MaybeNumber(b), MaybeNumber(c))
 
+    def test_sqrt(self):
+        tests = (
+            (4, 2),
+            (None, None),
+        )
+        for test in tests:
+            a, b = test
+            if a is None:
+                self.assertIsNone(MaybeNumber(a).sqrt().value)
+            else:
+                self.assertAlmostEqual(MaybeNumber(b), MaybeNumber(a).sqrt())
+
 
 if __name__ == '__main__':
     unittest.main()
+    if False:
+        pdb  # avoid pyflake8 warning
