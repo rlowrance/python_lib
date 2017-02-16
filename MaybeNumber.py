@@ -47,7 +47,13 @@ class MaybeNumber(object):
     def __radd__(self, other):
         return self + other
 
-    def __lt__(self, other):
+    def le(self, other):
+        if self.value is None or other.value is None:
+            return MaybeNumber(None)
+        else:
+            return MaybeNumber(self.value <= other.value)
+
+    def lt(self, other):
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
@@ -174,6 +180,17 @@ class TestMaybeNumber(unittest.TestCase):
             a, b, c = test
             self.assertEqual(MaybeNumber(a) - MaybeNumber(b), MaybeNumber(c))
 
+    def test_le(self):
+        tests = {
+            (100, 101, True),
+            (101, 100, False),
+            (100, None, None),
+            (None, 101, None),
+        }
+        for test in tests:
+            a, b, c = test
+            self.assertEqual(MaybeNumber(c), MaybeNumber(a).le(MaybeNumber(b)))
+
     def test_lt(self):
         tests = (
             (1, 2, True),
@@ -183,7 +200,7 @@ class TestMaybeNumber(unittest.TestCase):
         )
         for test in tests:
             a, b, c = test
-            self.assertEqual(MaybeNumber(a) < MaybeNumber(b), MaybeNumber(c))
+            self.assertEqual(MaybeNumber(c), MaybeNumber(a).le(MaybeNumber(b)))
 
     def test_div(self):
         tests = (
