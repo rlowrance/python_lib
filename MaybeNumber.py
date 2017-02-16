@@ -17,6 +17,7 @@ class MaybeNumber(object):
         elif isinstance(value, float) and np.isnan(value):
             self.value = None
         else:
+            assert isinstance(value, numbers.Number), value
             self.value = value
 
     def __repr__(self):
@@ -177,7 +178,6 @@ class TestMaybeNumber(unittest.TestCase):
         tests = (
             (1, 2, True),
             (2, 1, False),
-            ('ab', 'ac', True),
             (None, 2, None),
             (1, None, None),
         )
