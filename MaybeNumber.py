@@ -156,6 +156,16 @@ class TestMaybeNumber(unittest.TestCase):
             a, b, c = test
             self.assertEqual(MaybeNumber(a) / MaybeNumber(b), MaybeNumber(c))
 
+    def test_mean(self):
+        tests = (
+            (1, 2, 1.5),
+            (None, 2, None),
+            (1, None, None),
+        )
+        for test in tests:
+            a, b, c = test
+            self.assertAlmostEqual(MaybeNumber(c), MaybeNumber(a).mean(MaybeNumber(b)))
+
     def test_mul(self):
         tests = (
             (2, 3, 6),
