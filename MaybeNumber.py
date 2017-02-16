@@ -47,13 +47,25 @@ class MaybeNumber(object):
     def __radd__(self, other):
         return self + other
 
+    def ge(self, other):
+        if isinstance(other, numbers.Number):
+            return self.ge(MaybeNumber(other))
+        if self.value is None or other.value is None:
+            return MaybeNumber(None)
+        else:
+            return MaybeNumber(self.value >= other.value)
+
     def le(self, other):
+        if isinstance(other, numbers.Number):
+            return self.le(MaybeNumber(other))
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
             return MaybeNumber(self.value <= other.value)
 
     def lt(self, other):
+        if isinstance(other, numbers.Number):
+            return self.lt(MaybeNumber(other))
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
@@ -168,6 +180,19 @@ class TestMaybeNumber(unittest.TestCase):
         for test in tests:
             a, b, c = test
             self.assertEqual(MaybeNumber(a) + MaybeNumber(b), MaybeNumber(c))
+
+    def test_ge(self):
+        tests = (
+            (100, 101, False),
+            (100, 100, True),
+            (100, 99, True),
+            (100, None, None),
+            (None, 101, None),
+            (None, None, None),
+        )
+        for test in tests:
+            a, b, c = test
+            self.assertEqual(MaybeNumber(c), MaybeNumber(a).ge(MaybeNumber(b)))
 
     def test_sub(self):
         tests = (
