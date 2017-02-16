@@ -1,6 +1,7 @@
 from __future__ import division
 
 import math
+import numbers
 import numpy as np
 import pdb
 import unittest
@@ -35,10 +36,15 @@ class MaybeNumber(object):
             return MaybeNumber(abs(self.value))
 
     def __add__(self, other):
+        if isinstance(other, numbers.Number):
+            return self + MaybeNumber(other)
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
             return MaybeNumber(self.value + other.value)
+
+    def __radd__(self, other):
+        return self + other
 
     def __lt__(self, other):
         if self.value is None or other.value is None:
@@ -47,12 +53,19 @@ class MaybeNumber(object):
             return MaybeNumber(self.value < other.value)
 
     def __sub__(self, other):
+        if isinstance(other, numbers.Number):
+            return self - MaybeNumber(other)
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
             return MaybeNumber(self.value - other.value)
 
+    def __rsub__(self, other):
+        return MaybeNumber(other) - self
+
     def __truediv__(self, other):
+        if isinstance(other, numbers.Number):
+            return self / MaybeNumber(other)
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         elif other.value == 0:
@@ -60,11 +73,19 @@ class MaybeNumber(object):
         else:
             return MaybeNumber(self.value / other.value)
 
+    def __rtruediv__(self, other):
+        return MaybeNumber(other) / self
+
     def __mul__(self, other):
+        if isinstance(other, numbers.Number):
+            return self * MaybeNumber(other)
         if self.value is None or other.value is None:
             return MaybeNumber(None)
         else:
             return MaybeNumber(self.value * other.value)
+
+    def __rmul__(self, other):
+        return self * other
 
     def mean(self, other):
         sum = self + other
@@ -83,6 +104,26 @@ class MaybeNumber(object):
 class TestMaybeNumber(unittest.TestCase):
     def setUp(self):
         pass
+
+    def test_plain_number(self):
+        verbose = False
+        a = MaybeNumber(10)
+        b = 2
+        tests = (
+            (a + b, MaybeNumber(12)),
+            (b + a, MaybeNumber(12)),
+            (a - b, MaybeNumber(8)),
+            (b - a, MaybeNumber(-8)),
+            (a * b, MaybeNumber(20)),
+            (b * a, MaybeNumber(20)),
+            (a / b, MaybeNumber(5)),
+            (b / a, MaybeNumber(0.2)),
+        )
+        for test in tests:
+            actual, expected = test
+            if verbose:
+                print actual, expected
+            self.assertEqual(expected, actual)
 
     def test_construction(self):
         verbose = False
