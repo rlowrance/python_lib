@@ -5,8 +5,6 @@ import pdb
 
 class Report(object):
     def __init__(self, also_print=True):
-        # call me with
-        # super(<subclass>, self).__init__(also_print=True)
         self._also_print = also_print
         self._lines = []
 
