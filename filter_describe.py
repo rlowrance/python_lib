@@ -109,7 +109,43 @@ def main(argv):
 
 
 # API starts here
-def describe(path_in, path_out):
+# NOTE: design API so that it is I/O free
+def describe(df, is_categorical=None):
+    # return (numeric, categorical), 2 DataFrames describing the input'
+    # optional is_categorical(column_name) returns True iff the column is categorical
+    
+    def try_describe(df, include):
+        try:
+            result = df.describe(include=include)
+            return result
+        except ValueError as e:
+            if e.args[0] == 'No objects to concatenate':
+                return pd.DataFrame()
+            else:
+                raise  # re-raise last exception
+
+    if is_categorical is None:
+        categorical = try_describe(df, [object])
+        numeric = try_describe(df, [np.number])
+        return categorical, numeric
+
+    # classify columns
+    columns_numeric = []
+    columns_categorical = []
+    for column_name in df.columns:
+        if is_categorical is None:
+            columns_numeric.append(column_name)
+        else:
+            if is_categorical(column):
+                columns_categorical.append(column_name)
+            else:
+                columns_numeric.append(column_name)
+
+    categorical = pd.DataFrame(include=columns_categorical)
+    numeric = df.describe(include=columns_numeric)
+    return categorical, numeric
+
+
 if __name__ == '__main__':
     if False:
         # avoid pyflakes warnings
