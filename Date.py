@@ -7,16 +7,19 @@ import unittest
 
 
 class Date(object):
-    def __init__(self, from_float=None):
+    def __init__(self, from_float=None, from_yyyy_mm_dd=None):
         if from_float is not None:
             if isinstance(from_float, float):
                 self._value = Date._from_float(from_float)  # a datetime.date
             else:
                 print 'arg from_float %s is of type %s, not float' % (from_float, type(from_float))
                 assert False, 'construction error'
+        elif from_yyyy_mm_dd is not None:
+            self._value = Date._from_yyyy_mm_dd(from_yyyy_mm_dd)
         else:
             print 'bad construction of Date'
             assert False, 'construct via Data(from_float=<float value>)'
+        self.value = self._value  # guaranteed to be a date.datetime
 
     def as_datetime_date(self):
         'return value as a datetime.date'
@@ -33,6 +36,14 @@ class Date(object):
         day = int(month_day - month * 100)
         result = datetime.date(year, month, day)
         return result
+
+    @staticmethod
+    def _from_yyyy_mm_dd(s):
+        try:
+            year, month, day = s.split('-')
+            return datetime.date(int(year), int(month), int(day))
+        except:
+            raise ValueError('%s is not a str of the form YYYY-MM-DD' % s)
 
 
 class TestDate(unittest.TestCase):
@@ -67,6 +78,18 @@ class TestDate(unittest.TestCase):
 
         for test in tests:
             self.assertRaises(ValueError, f, test)
+
+    def test_from_yyyy_mm_dd(self):
+        tests = (
+            ('2006-03-15', 2006, 3, 15),
+        )
+        for test in tests:
+            s, expected_year, expected_month, expected_day = test
+            d = Date(from_yyyy_mm_dd=s)
+            self.assertEqual(
+                d.value,
+                datetime.date(expected_year, expected_month, expected_day)
+            )
 
 
 if __name__ == '__main__':
