@@ -3,8 +3,16 @@ import os.path
 import pdb
 
 
-def unpickle_file(path=None, process_unpickled_object=None, on_EOFError=None, on_ValueError=None, on_FileNotExists=None):
-    'unpicckle each object in the file at the path'
+def unpickle_file(
+    path=None,
+    process_unpickled_object=None,
+    on_EOFError=None,
+    on_ValueError=None,
+    on_FileNotExists=None,
+    object_class_file=None,
+    ):
+    'unpickle each object in the file at the path'
+    # NOTE: caller must define the type of the object by, for example, importing a class
     if not os.path.exists(path):
         if on_FileNotExists is None:
             return  # simulate end of file
