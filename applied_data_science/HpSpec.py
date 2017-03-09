@@ -9,12 +9,14 @@ class HpSpec(object):
     @abstractmethod
     def __str__(self):
         'return parsable string representation'
+        # Hint: Use method self._to_str(value) to convert individual values to strings
+        # That will make all the string representations use the same encoding of values to strings
         pass
 
     @staticmethod
     @abstractmethod
     def make_from_str(s):
-        'parse the representation returned by str(s) to create an instance'
+        'parse the representation returned by str(self) to create an instance'
         pass
 
     @abstractmethod
@@ -35,6 +37,7 @@ class HpSpec(object):
         pass
 
     def _to_str(self, value):
+        'internal method. Convert value to a string. Use me in your __str__ method'
         def remove_trailing_zeroes(s):
             return (
                 s if s[-1] != '0' else
