@@ -7,7 +7,7 @@ class HpChoices(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def iteritems(self):
+    def __iter__(self):
         'yield sequence of HpSpec objects'
         pass
 
