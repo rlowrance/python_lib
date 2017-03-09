@@ -34,6 +34,21 @@ class HpSpec(object):
     def __lt__(self, other):
         pass
 
+    def _to_str(self, value):
+        def remove_trailing_zeroes(s):
+            return (
+                s if s[-1] != '0' else
+                remove_trailing_zeroes(s[:-1])
+            )
+        if value is None:
+            return ''
+        elif isinstance(value, float):
+            return remove_trailing_zeroes(('%f' % value).replace('.', '_'))
+        elif isinstance(value, int):
+            return '%d' % value
+        else:
+            return str(value)
+
 
 class TestHpSpeC(unittest.TestCase):
     def test_construction(self):
