@@ -9,7 +9,6 @@ def unpickle_file(
     on_EOFError=None,
     on_ValueError=None,
     on_FileNotExists=None,
-    object_class_file=None,
     ):
     'unpickle each object in the file at the path'
     # NOTE: caller must define the type of the object by, for example, importing a class
