@@ -13,7 +13,7 @@ def unpickle_file(
     ):
     'unpickle each object in the file at the path'
     # NOTE: caller must define the type of the object by, for example, importing a class
-    if not os.path.exists(path):
+    if not os.path.isfile(path):
         if on_FileNotExists is None:
             return  # simulate end of file
         else:
@@ -37,3 +37,8 @@ def unpickle_file(
             else:
                 on_ValueError(e)
                 return
+
+
+if False:
+    # avoid pyflake8 warnings
+    pdb
