@@ -1,4 +1,4 @@
-'framework for filter programs'
+'framework for  Control programs'
 
 import argparse
 import pdb
@@ -8,7 +8,7 @@ import unittest
 import applied_data_science.Timer
 
 
-class Filter(object):
+class Control(object):
     def __init__(
         self,
         input_file_names=None,     # these become the first positional args
@@ -18,15 +18,15 @@ class Filter(object):
         add_default_keyword_args=True,  # if True, add settings_presence --test and --trace
         executable_name=None,
     ):
-        self.input_file_names = input_file_names
-        self.output_file_names = output_file_names
-        self.settings_presence = settings_presence
-        self.settings_value = settings_value
+        self.input_file_names = [] if input_file_names is None else input_file_names
+        self.output_file_names = [] if output_file_names is None else output_file_names
+        self.settings_presence = [] if settings_presence is None else settings_presence
+        self.settings_value = [] if settings_value is None else settings_value
         self.add_default_keyword_args = add_default_keyword_args
         self.executable_name = executable_name
 
         self.random_seed = 123
-        self.timer = applied_data_science.Timer.Timer()
+        self.timer = None
 
         # created by parse_invocation_args
         # the invocation is
@@ -35,7 +35,7 @@ class Filter(object):
         self.targets = None   # paths to the output files
 
     def parse_invocation(self, invocation=None):
-        'return argparse.NameSpace and populate filepaths and settings'
+        'set instance vars: arg timer file_dep targets action'
 
         # create the parser
         parser = argparse.ArgumentParser()
@@ -53,7 +53,7 @@ class Filter(object):
             parser.add_argument('--%s' % setting_name, action='store')
 
         if self.add_default_keyword_args:
-            for setting_name in ('test', 'trace'):
+            for setting_name in ('test', 'timer', 'trace', 'verbose'):
                 parser.add_argument('--%s' % setting_name, action='store_true')
 
         # use the parser
@@ -68,7 +68,9 @@ class Filter(object):
             sys.argv[1:] if invocation is None else
             invocation.split(' ')[1:]
         )
-        arg = parser.parse_args(argv)
+        self.arg = parser.parse_args(argv)
+
+        self.timer = applied_data_science.Timer.Timer() if self.arg.timer else None
 
         # create side-effect attributes of self
         # NOTES regarding Doit:
@@ -76,30 +78,54 @@ class Filter(object):
         #  Doit's action is the invocation string if it was supplied
         self.file_dep = {}
         for input_file_name in self.input_file_names:
-            self.file_dep[input_file_name] = getattr(arg, input_file_name)
+            self.file_dep[input_file_name] = getattr(self.arg, input_file_name)
         self.targets = {}
         for target in self.output_file_names:
-            self.targets[target] = getattr(arg, target)
+            self.targets[target] = getattr(self.arg, target)
         self.action = (
             invocation if invocation is not None else
             ' '.join(sys.argv)
         )
-        return arg
+        return self.arg
+
+    def p(self):
+        'print'
+        for k in sorted(self.__dict__.keys()):
+            v = self.__dict__[k]
+            if k == 'arg':
+                for k1 in sorted(v.__dict__.keys()):
+                    print '%s.%s' % (k, k1), v.__dict__[k1]
+            else:
+                print k, v
+
+    def do_work(self, worker_function):
+        if self.arg.verbose:
+            self.p()
+        return worker_function(self)
 
 
 class Test(unittest.TestCase):
-    def test_construction(self):
-        Filter(
+    def setUp(self):
+        self.one = Control(
             input_file_names=('a', 'b'),
             output_file_names=('x', 'y'),
             settings_presence=('presence1',),
             settings_value=('value1',),
             executable_name='executable',
         )
-        Filter()
+
+    def test_construction(self):
+        Control(
+            input_file_names=('a', 'b'),
+            output_file_names=('x', 'y'),
+            settings_presence=('presence1',),
+            settings_value=('value1',),
+            executable_name='executable',
+        )
+        Control()
 
     def test_parse_invocation(self):
-        x = Filter(
+        x = Control(
             input_file_names=('a', 'b'),
             output_file_names=('x', 'y'),
             settings_presence=('presence1',),
@@ -118,6 +144,13 @@ class Test(unittest.TestCase):
         self.assertEqual(x.file_dep, {'a': 'ina', 'b': 'inb'})
         self.assertEqual(x.targets, {'x': 'outx', 'y': 'outy'})
         self.assertEqual(x.action, x.action)
+
+    def test_print(self):
+        verbose = False
+        invocation = 'executable ina inb outx outy --presence1 --value1 value1xxx'
+        self.one.parse_invocation(invocation)
+        if verbose:
+            self.one.p()
 
 
 if __name__ == '__main__':
