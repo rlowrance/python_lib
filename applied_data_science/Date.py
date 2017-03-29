@@ -25,6 +25,9 @@ class Date(object):
         'return value as a datetime.date'
         return self._value  # for now, the value is stored as a datetime.date
 
+    def __str__(self):
+        print '%s' % self.value
+
     @staticmethod
     def _from_float(x):
         'return a datetime.date'
