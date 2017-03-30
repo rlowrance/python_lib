@@ -46,9 +46,8 @@ class CreateFeatures(object):
         self.n_output_records = 0
         self.skipped = collections.Counter()
         for index, master_record in master_file_records:
-            # maybe mutate d based on index and ticker_record
             self.n_input_records += 1
-            if verbose and self.n_input_records % 1000 == 1:
+            if self.n_input_records % 10000 == 1:
                 print 'creating features from master record %d index %s' % (self.n_input_records, index)
             (use_record, msg) = selected(index, master_record)
             if not use_record:
@@ -58,7 +57,7 @@ class CreateFeatures(object):
             # the feature makers may incorporate data from other records
             features_made = {}
             stopped_early = False
-            # concatenate all the features from the feature makers
+            # accumulate all the features from the feature makers
             # check for errors on the way
             for feature_maker in feature_makers:
                 maybe_features = feature_maker.make_features(index, master_record)
@@ -68,7 +67,6 @@ class CreateFeatures(object):
                     break
                 elif isinstance(maybe_features, dict):
                     for feature_name, feature_value in maybe_features.iteritems():
-                        print feature_name, feature_value
                         if feature_name in features_made:
                             error('duplicate feature name')
                         elif not feature_name.startswith('id_') and not isinstance(feature_value, numbers.Number):
