@@ -95,14 +95,84 @@ class FeatureMaker(object):
         pass
 
 
+FitPredictResult = collections.namedtuple(
+    'FitPredictResult',
+    (
+        'query_index',
+        'query_features',
+        'predicted_feature_name',
+        'predicted_feature_value',
+        'model_spec',
+        'prediction', 
+        'fitted_model',
+        'n_training_samples',
+    )
+)
+
+
 class FitPredict(object):
     'fit models and predict targets'
-    __metaclass__ = ABCMeta
 
-    @abstractmethod
-    def fit_predict(self, df_targets=None, df_features=None, df_new_targets=None, hp_spec=None):
-        'return result of fitting the model to df_targets and df_features using the HPs, and then predicting'
-        pass
+    def fit_predict(
+        self,
+        df_features=None,
+        df_targets=None,
+        make_model=None,
+        model_specs=None,
+        timestamp_feature_name=None,
+        already_seen_lambda=None,    # lambda query_index, model_spec, predicted_feature_name: Bool
+    ):
+        'yield either (True, result:FitPredictResult) or (False, error_msg:str)'
+        # df_targets: a sorted sequence of targets, sorted in timestamp order (y values)
+        sorted_targets = df_targets.sort_values(by=timestamp_feature_name)
+        for query_index in sorted_targets.index:
+            if query_index not in df_features.index:
+                yield False, 'no query feature for query index %s' % query_index
+                continue
+            query_features = df_features.loc[[query_index]]  # must be a DataFrame
+            assert len(query_features) == 1
+            timestamp = query_features.iloc[0][timestamp_feature_name]
+            mask = sorted_targets[timestamp_feature_name] < timestamp
+            training_targets = sorted_targets.loc[mask]
+            if len(training_targets) == 0:
+                yield False, 'no training_targets for query index %s timestamp %s' % (query_index, timestamp)
+                continue
+            training_features = df_features.loc[training_targets.index]
+            if len(training_features) == 0:
+                yield False, 'no training_features for query index %s timestamp %s' % (query_index, timestamp)
+                continue
+            for predicted_feature_name, predicted_feature_value in sorted_targets.loc[query_index].iteritems():
+                if predicted_feature_name.startswith('id_'):
+                    continue  # skip identifiers, as these are not features
+                if predicted_feature_name.endswith('_decreased') or predicted_feature_name.endswith('_increased'):
+                    yield False, 'classification not yet implemented; target feature name %s' % predicted_feature_name
+                    continue
+                for model_spec in model_specs:
+                    if already_seen_lambda(query_index, model_spec, predicted_feature_name):
+                        yield False, 'already seen: %s %s %s' % (query_index, model_spec, predicted_feature_name)
+                        continue
+                    m = make_model(model_spec, predicted_feature_name)
+                    try:
+                        # TODO: turn into keywords
+                        m.fit(training_features, training_targets)
+                    except Exception as e:
+                        yield False, 'exception raised during fitting: %s' % e
+                    predictions = m.predict(query_features)
+                    assert len(predictions) == 1
+                    yield (
+                        True,
+                        FitPredictResult(
+                            query_index=query_index,
+                            query_features=query_features,
+                            predicted_feature_name=predicted_feature_name,
+                            predicted_feature_value=predicted_feature_value,
+                            model_spec=model_spec,
+                            prediction=predictions[0],
+                            fitted_model=m,
+                            n_training_samples=len(training_features),
+                        )
+                    )
+        yield None
 
 
 class FitPredictOutput(object):
@@ -125,7 +195,21 @@ class HpChoices(object):
         pass
 
 
-class HpSpec(object):
+class Model(object):
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def fit(self, df_training_samples_features, df_training_samples_targets):
+        'mutate self; set attribute importances: Dict[feature_name:str, feature_importance:Number]'
+        pass
+
+    @abstractmethod
+    def predict(self, df_query_samples_features):
+        'return predictions'
+        pass
+
+
+class ModelSpec(object):
     'specification of a model name and its associated hyperparamters'
     __metaclass__ = ABCMeta
 
@@ -175,18 +259,6 @@ class HpSpec(object):
         else:
             return str(value)
 
-
-class Model(object):
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def __str__(self):
-        'return parsable string representation of self'
-
-    @staticmethod
-    @abstractmethod
-    def make_from_str(self, s):
-        'return instance of Model'
 
 
 class TestHpChoices(unittest.TestCase):
