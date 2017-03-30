@@ -76,6 +76,10 @@ class CreateFeatures(object):
                         else:
                             features_made[feature_name] = feature_value
                 else:
+                    print feature_maker.name
+                    print feature_maker
+                    print maybe_features
+                    print type(maybe_features)
                     error('unexpected return type from a feature_maker')
             if stopped_early:
                 continue
