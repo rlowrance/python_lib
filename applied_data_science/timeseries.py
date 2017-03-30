@@ -172,7 +172,6 @@ class FitPredict(object):
                             n_training_samples=len(training_features),
                         )
                     )
-        yield None
 
 
 class FitPredictOutput(object):
