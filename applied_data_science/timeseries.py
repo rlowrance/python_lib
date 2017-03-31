@@ -62,7 +62,7 @@ class CreateFeatures(object):
             for feature_maker in feature_makers:
                 maybe_features = feature_maker.make_features(index, master_record)
                 if isinstance(maybe_features, str):
-                    skip('no features from feature maker %s' % feature_maker.name)
+                    skip('no features from feature maker %s: %s' % (feature_maker.name, maybe_features))
                     stopped_early = True
                     break
                 elif isinstance(maybe_features, dict):
