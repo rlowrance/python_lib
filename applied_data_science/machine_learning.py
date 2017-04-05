@@ -15,12 +15,12 @@ class Model(object):
         pass
 
     @abc.abstractmethod
-    def gradient_prediction_wrt_x(self, features, prediction, weights):
+    def gradient_prediction_wrt_features(self, features, prediction, weights):
         'return np.array'
         pass
 
     @abc.abstractmethod
-    def gradient_prediction_wrt_w(self, features, prediction, weights):
+    def gradient_prediction_wrt_weights(self, features, prediction, weights):
         'return np.array'
         pass
 
@@ -64,7 +64,7 @@ class Linear(Model):
         result = np.array((result_scalar,))
         return result
 
-    def gradient_prediction_wrt_w(self, features, prediction, weights):
+    def gradient_prediction_wrt_weights(self, features, prediction, weights):
         assert len(features) == self.n_inputs
         assert len(prediction) == 1
         assert len(weights) == self.n_inputs + 1
@@ -74,7 +74,7 @@ class Linear(Model):
         result[1:] = copy.copy(features)
         return result
 
-    def gradient_prediction_wrt_x(self, features, prediction, weights):
+    def gradient_prediction_wrt_features(self, features, prediction, weights):
         assert len(prediction) == 1
         assert len(features) == self.n_inputs
         assert len(weights) == self.n_inputs + 1
@@ -116,7 +116,7 @@ class UnittestLinear(unittest.TestCase):
             self.assertEqual(prediction_expected, prediction_actual)
             self.assertTrue(isinstance(prediction_actual, np.ndarray))
 
-    def test_gradient_prediction_wrt_w(self):
+    def test_gradient_prediction_wrt_weights(self):
         weights = np.array((10, 20, 30))
         tests = (
             (0, np.empty((0)), np.array((1))),
@@ -128,10 +128,10 @@ class UnittestLinear(unittest.TestCase):
             model = Linear(n_inputs)
             weights_test = weights[:model.n_weights()]
             prediction_actual = model.predict(features, weights_test)
-            gradient_actual = model.gradient_prediction_wrt_w(features, prediction_actual, weights_test)
+            gradient_actual = model.gradient_prediction_wrt_weights(features, prediction_actual, weights_test)
             self.assertTrue((gradient_expected == gradient_actual).all())
 
-    def test_gradient_prediction_wrt_x(self):
+    def test_gradient_prediction_wrt_features(self):
         weights = np.array((1, 2, 3))
         tests = (
             # (0, np.empty((0)), np.empty((0))),
@@ -143,7 +143,7 @@ class UnittestLinear(unittest.TestCase):
             model = Linear(n_inputs)
             weights_test = weights[:model.n_weights()]
             prediction_actual = model.predict(features, weights_test)
-            gradient_actual = model.gradient_prediction_wrt_x(features, prediction_actual, weights_test)
+            gradient_actual = model.gradient_prediction_wrt_features(features, prediction_actual, weights_test)
             self.assertTrue((gradient_expected == gradient_actual).all())
 
 
