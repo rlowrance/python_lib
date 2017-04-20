@@ -49,6 +49,26 @@ class Criterion(object):
         pass
 
 
+class ModelCriterion(object):
+    def __init__(self, model=None, criterion=None):
+        assert isinstance(model, machine_learning.Model)
+        assert isinstance(criterion, machine_learning.Criterion)
+        self.model = model
+        self.criterion = criterion
+
+    def loss_prediction(self, features, target, weights):
+        prediction = self.model.predict(features, weights)
+        loss = self.criterion.loss(prediction, target)
+        return loss, predictiont
+
+    def gradient_wrt_weights(self, features, loss, prediction, target, weights):
+        'using the chain rule'
+        gradient_prediction_wrt_weights = self.model.gradient_prediction_wrt_weights(features, prediction, weights)
+        derivate_loss_wrt_prediction = self.criterion.derivative_loss_wrt_prediction(loss, prediction, target)
+        result = gradient_prediction_wrt_weights * derivate_loss_wrt_prediction
+        return result
+
+
 class Linear(Model):
     'y = bias + coef * x'
     def __init__(self, n_inputs):
