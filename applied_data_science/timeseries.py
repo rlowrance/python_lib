@@ -18,17 +18,12 @@ class CreateFeatures(object):
         self,
         feature_makers=None,
         master_file_records=None,
-        selected=None,   # lambda index, master_record: (use_record, maybe_error_message)
+        selected=None,   # lambda index, master_record -> (use_record: Bool, maybe_error_message)
+        report_skipped_master_record=None,  # lambda index, master_record, [None|feature_maker], msg -> None
         # start optional arguments
         verbose=False,
     ):
         'yield sequence (features:Dict, index, master_record) of output records with features derived from the master file'
-        def skip(msg):
-            entire_msg = ('skipping %d %s; %s' % (self.n_input_records, index, msg))
-            self.skipped[msg] += 1
-            if verbose:
-                print entire_msg
-
         def error(msg):
             print 'error in feature maker %s feature_name %s feature_value %s' % (
                 feature_maker.name,
@@ -42,6 +37,7 @@ class CreateFeatures(object):
         assert feature_makers is not None
         assert master_file_records is not None
         assert selected is not None
+        assert report_skipped_master_record is not None
         self.n_input_records = 0
         self.n_output_records = 0
         self.skipped = collections.Counter()
@@ -51,7 +47,7 @@ class CreateFeatures(object):
                 print 'creating features from master record %d index %s' % (self.n_input_records, index)
             (use_record, msg) = selected(index, master_record)
             if not use_record:
-                skip(msg)
+                report_skipped_master_record(index, master_record, None, msg)
                 continue
             # create features from the master_record
             # the feature makers may incorporate data from other records
@@ -62,7 +58,7 @@ class CreateFeatures(object):
             for feature_maker in feature_makers:
                 maybe_features = feature_maker.make_features(index, master_record)
                 if isinstance(maybe_features, str):
-                    skip('no features from feature maker %s: %s' % (feature_maker.name, maybe_features))
+                    report_skipped_master_record(index, master_record, feature_maker, maybe_features)
                     stopped_early = True
                     break
                 elif isinstance(maybe_features, dict):
@@ -161,21 +157,26 @@ class FitPredict(object):
                         m.fit(training_features, training_targets)
                     except Exception as e:
                         yield False, 'exception raised during fitting: %s' % e
+                        continue
                     predictions = m.predict(query_features)
                     assert len(predictions) == 1
-                    yield (
-                        True,
-                        FitPredictResult(
-                            query_index=query_index,
-                            query_features=query_features,
-                            predicted_feature_name=predicted_feature_name,
-                            predicted_feature_value=predicted_feature_value,
-                            model_spec=model_spec,
-                            prediction=predictions[0],
-                            fitted_model=m,
-                            n_training_samples=len(training_features),
+                    prediction = predictions[0]
+                    if prediction is None:
+                        yield False, 'predicted value was None: %s %s %s' % (query_index, model_spec, predicted_feature_name)
+                    else:
+                        yield (
+                            True,
+                            FitPredictResult(
+                                query_index=query_index,
+                                query_features=query_features,
+                                predicted_feature_name=predicted_feature_name,
+                                predicted_feature_value=predicted_feature_value,
+                                model_spec=model_spec,
+                                prediction=predictions[0],
+                                fitted_model=m,
+                                n_training_samples=len(training_features),
+                            )
                         )
-                    )
 
 
 class FitPredictOutput(object):
