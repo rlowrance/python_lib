@@ -110,6 +110,14 @@ FitPredictResult = collections.namedtuple(
 )
 
 
+class ExceptionFit(Exception):
+    def __init__(self, parameter):
+        self.parameter = parameter
+
+    def __str(self):
+        return 'ExceptionFit(%s)' % str(self.parameter)
+
+
 class FitPredict(object):
     'fit models and predict targets'
 
@@ -155,8 +163,8 @@ class FitPredict(object):
                     try:
                         # TODO: turn into keywords
                         m.fit(training_features, training_targets)
-                    except Exception as e:
-                        yield False, 'exception raised during fitting: %s' % e
+                    except ExceptionFit as e:
+                        yield False, 'exception raised during fitting: %s' % str(e)
                         continue
                     predictions = m.predict(query_features)
                     assert len(predictions) == 1
