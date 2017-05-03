@@ -10,6 +10,7 @@ usage
 '''
 import argparse
 import pdb
+import pprint
 import unittest
 
 
@@ -36,6 +37,9 @@ class Bunch(object):
             elif isinstance(v, argparse.Namespace):
                 for k2, v2 in v.__dict__.items():
                     result.append('%s.%s = %s' % (str(k), str(k2), str(v2)))
+            elif isinstance(v, (dict, list)):
+                result.append('%s =' % k)
+                result.append(pprint.pformat(v))
             elif basename == '':
                 result.append('%s = %s' % (k, v))
             else:
