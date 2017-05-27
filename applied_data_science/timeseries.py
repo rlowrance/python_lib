@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 import collections
 import pdb
 import numbers
+import numpy as np
 import unittest
 
 
@@ -114,7 +115,7 @@ class ExceptionFit(Exception):
     def __init__(self, parameter):
         self.parameter = parameter
 
-    def __str(self):
+    def __str__(self):
         return 'ExceptionFit(%s)' % str(self.parameter)
 
 
@@ -169,6 +170,10 @@ class FitPredict(object):
                     predictions = m.predict(query_features)
                     assert len(predictions) == 1
                     prediction = predictions[0]
+                    if np.isnan(prediction):
+                        print 'prediction is NaN', prediction
+                        print model_spec
+                        pdb.set_trace()
                     if prediction is None:
                         yield False, 'predicted value was None: %s %s %s' % (query_index, model_spec, predicted_feature_name)
                     else:
@@ -270,7 +275,6 @@ class ModelSpec(object):
             return '%d' % value
         else:
             return str(value)
-
 
 
 class TestHpChoices(unittest.TestCase):
