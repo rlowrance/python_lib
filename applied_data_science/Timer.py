@@ -48,19 +48,23 @@ class Timer(object):
                 toStr(now[1] - start[1])
             )
 
+        def diff_float(start, now):
+            return (now[0] - start[0], now[1] - start[1])
+
         clock_time = self.clock_time()
         cumulative_seconds = diff(self._program, clock_time)
-        lap_seconds = diff(self._lap, clock_time)
+        lap_seconds_str = diff(self._lap, clock_time)
+        lap_seconds_float = diff_float(self._lap, clock_time)
         self._lap = clock_time  # reset lap time
         if verbose:
             visual_clue = '=' * 50
             print visual_clue
             print 'lap: %s' % s
             print 'cumulative %s cpu %s wallclock' % cumulative_seconds
-            print 'lap        %s cpu %s wallclock' % lap_seconds
+            print 'lap        %s cpu %s wallclock' % lap_seconds_str
             print visual_clue
             print
-        return lap_seconds
+        return lap_seconds_float  # unix->(processor sec, wall clock sec) windows->(wall clock sec, wall clock sec)
 
     def endlaps(self):
         self.lap('**End Program**')
