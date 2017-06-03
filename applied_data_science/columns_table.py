@@ -1,4 +1,7 @@
-def columns_table(column_specs, values):
+import pdb
+
+
+def columns_table(column_specs, values, trace=False):
     'return [str]'
     # column_specs: iterable of dict that specify the columns
     # values: iterable of iterables, with the values for each row
@@ -52,22 +55,6 @@ def columns_table(column_specs, values):
             '}'
         )
 
-    # def format_headings(widths, headings):
-    #     return [
-    #         prepend_width(width, 's') % heading
-    #         for width, heading in zip(widths, headings)
-    #     ]
-
-    # def make_heading_string(headings):
-    #     return ' '.join(format_headings(widths, headings))
-
-    # def format_value_iterable(widths, values):
-    #     pdb.set_trace()
-    #     column_values = [
-    #         prepend_width(width, data_format) % value
-    #         for width, data_format, value in zip(widths, data_formats, values)
-    #     ]
-    #     return ' '.join(column_values)
 
     def n_heading_rows():
         'return (int, heading_row_separator) and check all the headings'
@@ -89,6 +76,8 @@ def columns_table(column_specs, values):
 
     result = []
     # create the headings
+    if trace:
+        pdb.set_trace()
     n_headings, heading_row_separator = n_heading_rows()
     for n in xrange(n_headings):
             heading_portions = []
@@ -100,6 +89,8 @@ def columns_table(column_specs, values):
             result.append(' '.join(heading_portions))
 
     # append all the values
+    if trace:
+        pdb.set_trace()
     for value_iterable in values:
         row = []
         for n, column_spec in enumerate(column_specs):
