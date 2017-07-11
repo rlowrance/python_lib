@@ -19,7 +19,7 @@ import sys
 import pdb
 
 
-from directory import directory
+from .directory import directory
 
 
 if False:

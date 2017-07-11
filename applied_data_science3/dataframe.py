@@ -22,8 +22,8 @@ import collections
 import numpy as np
 import pdb
 
-import ColumnsTable
-import Report
+from . import ColumnsTable
+from . import Report
 
 
 def create_report_categorical(df, excluded_columns=[], include_types=[object]):
@@ -31,13 +31,13 @@ def create_report_categorical(df, excluded_columns=[], include_types=[object]):
     description = df.describe(
         include=include_types,
     )
-    print description
+    print(description)
     r = ReportCategorical()
     included_columns = []
     for column_name in description.columns:
-        print column_name, len(column_name)
+        print(column_name, len(column_name))
         if column_name in excluded_columns:
-            print 'create_report_categorical: excluding column:', column_name
+            print('create_report_categorical: excluding column:', column_name)
             continue
         else:
             r.append_detail(description[column_name])
@@ -50,13 +50,13 @@ def create_report_numeric(df, excluded_columns=[], include_types=[np.number, obj
     description = df.describe(
         include=include_types,
     )
-    print description
+    print(description)
     r = ReportNumeric()
     included_columns = []
     for column_name in description.columns:
-        print column_name
+        print(column_name)
         if column_name in excluded_columns:
-            print 'create_report_numeric: excluding column:', column_name
+            print('create_report_numeric: excluding column:', column_name)
             continue
         else:
             r.append_detail(description[column_name])
@@ -107,7 +107,7 @@ all_column_specs = {  # each with a 2-row header
 
 
 def column_def(column_name):
-    print column_name
+    print(column_name)
     assert column_name in all_column_specs, ('%s not defined in all_column_specs' % column_name)
     column_spec = all_column_specs[column_name]
     return [

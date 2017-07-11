@@ -96,7 +96,7 @@ def columns_table(column_specs, values, trace=False):
     if trace:
         pdb.set_trace()
     n_headings, heading_row_separator = n_heading_rows()
-    for n in xrange(n_headings):
+    for n in range(n_headings):
             heading_portions = []
             for column_spec in column_specs:
                 formatter = '{:>%ds}' % column_spec['width']  # right justified

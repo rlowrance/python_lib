@@ -21,9 +21,7 @@ import pdb
 import unittest
 
 
-class Model(object):
-    __metaclass__ = abc.ABCMeta
-
+class Model(object, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def predict(self, w, x):
         'return np.array'
@@ -45,9 +43,7 @@ class Model(object):
         pass
 
 
-class Criterion(object):
-    __metaclass__ = abc.ABCMeta
-
+class Criterion(object, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def loss(self, prediction, target):
         'return Number'

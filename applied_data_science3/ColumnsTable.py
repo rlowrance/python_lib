@@ -47,11 +47,11 @@ class ColumnsTable(object):
             headers = (headers,) if isinstance(headers, str) else headers
             if self._number_of_header_lines != 0:
                 if self._number_of_header_lines != len(headers):
-                    print '+++++++++++++++++++++'
-                    print 'inconsistent number of lines in header'
-                    print 'have both %d and %d' % (self._number_of_header_lines, len(headers))
-                    print 'found at header: %s' % headers
-                    print '+++++++++++++++++++++'
+                    print('+++++++++++++++++++++')
+                    print('inconsistent number of lines in header')
+                    print('have both %d and %d' % (self._number_of_header_lines, len(headers)))
+                    print('found at header: %s' % headers)
+                    print('+++++++++++++++++++++')
                     pdb.set_trace()
             self._number_of_header_lines = len(headers)
             self._columns.append(ColumnsTableFields(ctf.name,
@@ -60,9 +60,9 @@ class ColumnsTable(object):
                                                     headers,
                                                     ctf.legend))
             if ctf.name in self._column_names:
-                print '+++++++++++++++++++++'
-                print 'column name already defined: %s' % ctf.name
-                print '+++++++++++++++++++++'
+                print('+++++++++++++++++++++')
+                print('column name already defined: %s' % ctf.name)
+                print('+++++++++++++++++++++')
                 pdb.set_trace()
             self._column_names.add(ctf.name)
         self._lines = []
@@ -93,10 +93,10 @@ class ColumnsTable(object):
     def append_detail(self, **kwds):
         line = ''
         # detect and report extra arguments
-        for k in kwds.keys():
+        for k in list(kwds.keys()):
             if k not in self._column_names:
-                print 'Column %s is not defined in the ColumnTable' % k
-                print 'defined column names are', self._column_names
+                print('Column %s is not defined in the ColumnTable' % k)
+                print('defined column names are', self._column_names)
                 pdb.set_trace()
         # format values in kwds
         for cd in self._columns:
@@ -104,12 +104,12 @@ class ColumnsTable(object):
                 try:
                     glyph = cd.formatter % kwds[cd.name]
                 except TypeError as e:
-                    print '+++++++++++++++++++++++++'
-                    print TypeError, e
-                    print 'formatter  : %s' % cd.formatter
-                    print 'field name : %s' % cd.name
-                    print 'field value: %s' % kwds[cd.name]
-                    print '+++++++++++++++++++++++++'
+                    print('+++++++++++++++++++++++++')
+                    print(TypeError, e)
+                    print('formatter  : %s' % cd.formatter)
+                    print('field name : %s' % cd.name)
+                    print('field value: %s' % kwds[cd.name])
+                    print('+++++++++++++++++++++++++')
                     pdb.set_trace()
             else:
                 # if missing or None, print spaces for the value
@@ -121,7 +121,7 @@ class ColumnsTable(object):
 
     def append_line(self, line):
         if self._verbose:
-            print line
+            print(line)
         self._lines.append(line)
 
     def _header(self):
@@ -133,12 +133,12 @@ class ColumnsTable(object):
                 line += (' ' if len(line) > 0 else '') + formatted
             self.append_line(line)
 
-        for header_line_index in xrange(self._number_of_header_lines):
+        for header_line_index in range(self._number_of_header_lines):
             append_header(header_line_index)
 
     def _print(self):
         for line in self._lines:
-            print line
+            print(line)
 
 
 class TestColumnsTable(unittest.TestCase):
@@ -170,7 +170,7 @@ class TestColumnsTable(unittest.TestCase):
         for line in c.iterlines():
             counter['line'] += 1
             if self.verbose:
-                print line
+                print(line)
 
         self.assertEqual(counter['line'], 2)  # only 2 column headers lines
 

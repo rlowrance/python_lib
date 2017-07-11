@@ -48,7 +48,7 @@ if __name__ == '__main__':
             # pdb.set_trace()
             s = directory(cell_name)
             if False:
-                print cell_name, s
+                print(cell_name, s)
             self.assertTrue(isinstance(s, str))
             self.assertTrue(s.endswith('/'))
 

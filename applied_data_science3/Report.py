@@ -13,7 +13,7 @@ distributed under the License is distributed on as "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing premission and
 limitation under the license.
-''
+'''
 
 import pdb
 
@@ -26,7 +26,7 @@ class Report(object):
     def append(self, line):
         self._lines.append(line)
         if self._also_print:
-            print line
+            print(line)
 
     def append_lines(self, lines):
         for line in lines:
@@ -46,8 +46,8 @@ class Report(object):
             try:
                 f.write(str(line))
             except:
-                print line
-                print type(line)
+                print(line)
+                print(type(line))
                 pdb.set_trace()
             f.write('\n')
         f.close()

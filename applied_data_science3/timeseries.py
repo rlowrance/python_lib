@@ -41,13 +41,13 @@ class CreateFeatures(object):
     ):
         'yield sequence (features:Dict, index, master_record) of output records with features derived from the master file'
         def error(msg):
-            print 'error in feature maker %s feature_name %s feature_value %s' % (
+            print('error in feature maker %s feature_name %s feature_value %s' % (
                 feature_maker.name,
                 feature_name,
                 feature_value,
-            )
-            print msg
-            print 'entering pdb'
+            ))
+            print(msg)
+            print('entering pdb')
             pdb.set_trace()
 
         assert feature_makers is not None
@@ -60,7 +60,7 @@ class CreateFeatures(object):
         for index, master_record in master_file_records:
             self.n_input_records += 1
             if self.n_input_records % 10000 == 1:
-                print 'creating features from master record %d index %s' % (self.n_input_records, index)
+                print('creating features from master record %d index %s' % (self.n_input_records, index))
             (use_record, msg) = selected(index, master_record)
             if not use_record:
                 report_skipped_master_record(index, master_record, None, msg)
@@ -78,7 +78,7 @@ class CreateFeatures(object):
                     stopped_early = True
                     break
                 elif isinstance(maybe_features, dict):
-                    for feature_name, feature_value in maybe_features.iteritems():
+                    for feature_name, feature_value in maybe_features.items():
                         if feature_name in features_made:
                             error('duplicate feature name')
                         elif not feature_name.startswith('id_') and not isinstance(feature_value, numbers.Number):
@@ -88,10 +88,10 @@ class CreateFeatures(object):
                         else:
                             features_made[feature_name] = feature_value
                 else:
-                    print feature_maker.name
-                    print feature_maker
-                    print maybe_features
-                    print type(maybe_features)
+                    print(feature_maker.name)
+                    print(feature_maker)
+                    print(maybe_features)
+                    print(type(maybe_features))
                     error('unexpected return type from a feature_maker')
             if stopped_early:
                 continue
@@ -99,9 +99,7 @@ class CreateFeatures(object):
             yield features_made, index, master_record
 
 
-class FeatureMaker(object):
-    __metaclass__ = ABCMeta
-
+class FeatureMaker(object, metaclass=ABCMeta):
     def __init__(self, name=None):
         self.name = name  # used in error message; informal name of the feature maker
 
@@ -165,7 +163,7 @@ class FitPredict(object):
             if len(training_features) == 0:
                 yield False, 'no training_features for query index %s timestamp %s' % (query_index, timestamp)
                 continue
-            for predicted_feature_name, predicted_feature_value in sorted_targets.loc[query_index].iteritems():
+            for predicted_feature_name, predicted_feature_value in sorted_targets.loc[query_index].items():
                 if predicted_feature_name.startswith('id_'):
                     continue  # skip identifiers, as these are not features
                 if predicted_feature_name.endswith('_decreased') or predicted_feature_name.endswith('_increased'):
@@ -186,8 +184,8 @@ class FitPredict(object):
                     assert len(predictions) == 1
                     prediction = predictions[0]
                     if np.isnan(prediction):
-                        print 'prediction is NaN', prediction
-                        print model_spec
+                        print('prediction is NaN', prediction)
+                        print(model_spec)
                         pdb.set_trace()
                     if prediction is None:
                         yield False, 'predicted value was None: %s %s %s' % (query_index, model_spec, predicted_feature_name)
@@ -207,9 +205,8 @@ class FitPredict(object):
                         )
 
 
-class FitPredictOutput(object):
+class FitPredictOutput(object, metaclass=ABCMeta):
     'content of output file for program fit_predict.py'
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def as_dict(self):
@@ -217,9 +214,8 @@ class FitPredictOutput(object):
         pass
 
 
-class HpChoices(object):
+class HpChoices(object, metaclass=ABCMeta):
     'iterated over HpSpec instances'
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __iter__(self):
@@ -227,9 +223,7 @@ class HpChoices(object):
         pass
 
 
-class Model(object):
-    __metaclass__ = ABCMeta
-
+class Model(object, metaclass=ABCMeta):
     @abstractmethod
     def fit(self, df_training_samples_features, df_training_samples_targets):
         'mutate self; set attribute importances: Dict[feature_name:str, feature_importance:Number]'
@@ -241,9 +235,8 @@ class Model(object):
         pass
 
 
-class ModelSpec(object):
+class ModelSpec(object, metaclass=ABCMeta):
     'specification of a model name and its associated hyperparamters'
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __str__(self):
