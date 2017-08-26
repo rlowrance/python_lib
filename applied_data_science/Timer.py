@@ -18,6 +18,7 @@ import atexit
 import os
 import pdb
 import time
+from functools import reduce
 
 
 class Timer(object):
@@ -74,12 +75,12 @@ class Timer(object):
         self._lap = clock_time  # reset lap time
         if verbose:
             visual_clue = '=' * 50
-            print visual_clue
-            print 'lap: %s' % s
-            print 'cumulative %s cpu %s wallclock' % cumulative_seconds
-            print 'lap        %s cpu %s wallclock' % lap_seconds_str
-            print visual_clue
-            print
+            print(visual_clue)
+            print('lap: %s' % s)
+            print('cumulative %s cpu %s wallclock' % cumulative_seconds)
+            print('lap        %s cpu %s wallclock' % lap_seconds_str)
+            print(visual_clue)
+            print()
         return lap_seconds_float  # unix->(processor sec, wall clock sec) windows->(wall clock sec, wall clock sec)
 
     def endlaps(self):

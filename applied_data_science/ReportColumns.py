@@ -17,8 +17,8 @@ limitation under the license.
 
 import pdb
 
-from ColumnsTable import ColumnsTable
-from Report import Report
+from .ColumnsTable import ColumnsTable
+from .Report import Report
 
 
 class ReportColumns(object):

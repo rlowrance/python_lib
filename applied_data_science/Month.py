@@ -43,7 +43,7 @@ class Month(object):
                 self.month = value1.month
                 self.year = value1.year
             else:
-                print 'construction error: value1 is of type %s' % type(value1), value1
+                print('construction error: value1 is of type %s' % type(value1), value1)
         else:
             self.year = int(value1)
             self.month = int(value2)
@@ -165,8 +165,8 @@ class TestMonth(unittest.TestCase):
         self.assertTrue(a == a)
 
     def test_constructor(self):
-        self.assertTrue(Month('200703').equal(Month(2007, 03)))
-        self.assertTrue(Month(200703).equal(Month(2007, 03)))
+        self.assertTrue(Month('200703').equal(Month(2007, 0o3)))
+        self.assertTrue(Month(200703).equal(Month(2007, 0o3)))
         self.assertTrue(Month(200712).equal(Month(2007, 12)))
         m1 = Month(2007, 3)
         m2 = Month(m1)
@@ -179,7 +179,7 @@ class TestMonth(unittest.TestCase):
         self.assertTrue(Month(200703).as_int() == 200703)
 
     def test_equal(self):
-        self.assertTrue(Month('200703').equal(Month(2007, 03)))
+        self.assertTrue(Month('200703').equal(Month(2007, 0o3)))
 
     def test_increment(self):
         self.assertTrue(Month(200612).increment().equal(Month(200701)))

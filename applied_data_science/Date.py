@@ -14,7 +14,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing premission and
 limitation under the license.
 '''
-from __future__ import division
+
 
 import datetime
 import pdb
@@ -27,12 +27,12 @@ class Date(object):
             if isinstance(from_float, float):
                 self._value = Date._from_float(from_float)  # a datetime.date
             else:
-                print 'arg from_float %s is of type %s, not float' % (from_float, type(from_float))
+                print('arg from_float %s is of type %s, not float' % (from_float, type(from_float)))
                 assert False, 'construction error'
         elif from_yyyy_mm_dd is not None:
             self._value = Date._from_yyyy_mm_dd(from_yyyy_mm_dd)
         else:
-            print 'bad construction of Date'
+            print('bad construction of Date')
             assert False, 'construct via Data(from_float=<float value>)'
         self.value = self._value  # guaranteed to be a date.datetime
 
@@ -84,7 +84,7 @@ class TestDate(unittest.TestCase):
 
     def test_from_float_bad(self):
         tests = (
-            00000101,
+            0o0000101,
             20170001,
             20171301,
             20171200,

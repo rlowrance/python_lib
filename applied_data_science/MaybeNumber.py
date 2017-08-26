@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing premission and
 limitation under the license.
 '''
-from __future__ import division
+
 
 import math
 import numbers
@@ -156,7 +156,7 @@ class TestMaybeNumber(unittest.TestCase):
         for test in tests:
             actual, expected = test
             if verbose:
-                print actual, expected
+                print(actual, expected)
             self.assertEqual(expected, actual)
 
     def test_construction(self):
@@ -169,7 +169,7 @@ class TestMaybeNumber(unittest.TestCase):
         )
         for test in tests:
             if verbose:
-                print test
+                print(test)
             value, expected = test
             x = MaybeNumber(value)
             self.assertEqual(x.value, expected)

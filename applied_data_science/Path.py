@@ -59,14 +59,14 @@ class Path(object):
         elif file_id == 'census':
             return self._dir_input + 'neighborhood-data/census.csv'
         else:
-            print 'bad input file_id', file_id
+            print('bad input file_id', file_id)
             pdb.set_trace()
 
     def dir_src(self, file_id=None):
         if file_id is None:
             return self._dir_src
         else:
-            print 'bad file_id', file_id
+            print('bad file_id', file_id)
             pdb.set_trace()
 
     def dir_working(self, sub_dir_name=None):
@@ -75,5 +75,5 @@ class Path(object):
         elif sub_dir_name == 'log':
             return self._dir_working + 'log/'
         else:
-            print 'bad sub_dir_name', sub_dir_name
+            print('bad sub_dir_name', sub_dir_name)
             pdb.set_trace()

@@ -17,7 +17,7 @@ import pandas as pd
 import pdb
 from pprint import pprint
 
-import columns_contain
+from . import columns_contain
 cc = columns_contain.columns_contain
 
 
@@ -28,14 +28,14 @@ def summarize(df):
     '''
     description = df.describe()
     # print description
-    print df.shape
-    print description.shape
+    print(df.shape)
+    print(description.shape)
     rows = []
     for column_name in df.columns:
         # print column_name
         if column_name not in description.columns:
             # non-numeric columns are omitted from description
-            print 'description is missing', column_name
+            print('description is missing', column_name)
             continue
         series = df[column_name]
         d = {}

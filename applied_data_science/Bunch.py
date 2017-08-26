@@ -32,7 +32,7 @@ class Bunch(object):
     @staticmethod
     def from_namespace(namespace):
         b = Bunch()
-        for attr, value in namespace.__dict__.iteritems():
+        for attr, value in namespace.__dict__.items():
             b.__dict__[attr] = value
         return b
 
@@ -49,7 +49,7 @@ class Bunch(object):
                 for v in vs:
                     result.append(v)
             elif isinstance(v, argparse.Namespace):
-                for k2, v2 in v.__dict__.items():
+                for k2, v2 in list(v.__dict__.items()):
                     result.append('%s.%s = %s' % (str(k), str(k2), str(v2)))
             elif isinstance(v, (dict, list)):
                 result.append('%s =' % k)
@@ -72,7 +72,7 @@ class Bunch(object):
     def __repr__(self):
         s = 'Bunch('
         first = True
-        for k, v in self.__dict__.iteritems():
+        for k, v in self.__dict__.items():
             if first:
                 first = False
             else:
@@ -97,13 +97,13 @@ class Test(unittest.TestCase):
         b = Bunch.from_namespace(ns)
         if self.verbose:
             pdb.set_trace()
-            print b
+            print(b)
 
     def test_print(self):
         inner = Bunch(a=10, b=20)
         outer = Bunch(x='abc', inner=inner)
         if self.verbose:
-            print outer
+            print(outer)
 
 
 if __name__ == '__main__':

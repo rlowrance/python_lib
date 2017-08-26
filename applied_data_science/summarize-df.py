@@ -19,32 +19,32 @@ See the License for the specific language governing premission and
 limitation under the license.
 '''
 
-import cPickle as pickle
+import pickle as pickle
 import pandas as pd
 import pdb
 import random
 import sys
 
-import Bunch
-import Logger
+from . import Bunch
+from . import Logger
 import ParseCommandLine
-import Path
-from Report import Report
-import summarize
+from . import Path
+from .Report import Report
+from . import summarize
 
 
 def usage(msg=None):
     if msg is not None:
-        print msg
-    print 'usage : python summarize_df.py --in PATH [--test]'
-    print ' PATH   : path to input csv'
-    print ' --test : run in test mode'
+        print(msg)
+    print('usage : python summarize_df.py --in PATH [--test]')
+    print(' PATH   : path to input csv')
+    print(' --test : run in test mode')
     sys.exit(1)
 
 
 def make_control(argv):
     # return a Bunch
-    print argv
+    print(argv)
     if len(argv) not in (3, 4):
         usage('invalid number of arguments')
 
@@ -101,7 +101,7 @@ def make_report(summary):
 def main(argv):
     control = make_control(argv)
     sys.stdout = Logger.Logger(base_name=control.arg.base_name)
-    print control
+    print(control)
 
     in_df = pd.read_csv(control.path_in,
                         nrows=1000 if control.test else None,
@@ -110,7 +110,7 @@ def main(argv):
     report_summary = make_report(summary_df)
     # TODO: print correlations of each variable with price
 
-    print summary_df
+    print(summary_df)
 
     # write output files
     summary_df.to_csv(control.path_out_summary)
@@ -120,10 +120,10 @@ def main(argv):
     f.close()
 
     if control.test:
-        print 'DISCARD OUTPUT: TESTING'
+        print('DISCARD OUTPUT: TESTING')
 
-    print control
-    print 'done'
+    print(control)
+    print('done')
 
 
 if __name__ == '__main__':

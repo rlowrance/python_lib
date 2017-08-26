@@ -1,5 +1,5 @@
 '''maintain a pickled cache file on disk'''
-import cPickle as pickle
+import pickle as pickle
 import os
 import pdb
 import time
@@ -31,16 +31,16 @@ class Cache(object):
             with open(path_to_cache, 'r') as f:
                 cache = pickle.load(f)
             if self.verbose:
-                print 'read cache; elapsed wall clock time', time.time() - start_time
+                print('read cache; elapsed wall clock time', time.time() - start_time)
         else:
             cache = read_data_function(dictionary)
             if self.verbose:
-                print 'read underlying data; elapsed wall clock time', time.time() - start_time
+                print('read underlying data; elapsed wall clock time', time.time() - start_time)
             start_time = time.time()
             with open(path_to_cache, 'w') as f:
                 pickle.dump(cache, f)
             if self.verbose:
-                print 'write cache: elapsed wall clock time', time.time() - start_time
+                print('write cache: elapsed wall clock time', time.time() - start_time)
         return cache
 
 

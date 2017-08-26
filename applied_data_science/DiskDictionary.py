@@ -15,7 +15,7 @@ limitation under the license.
 '''
 import os
 import pdb
-import cPickle as pickle
+import pickle as pickle
 import unittest
 
 
@@ -59,7 +59,7 @@ class DiskDictionary(object):
         'return set of keys in the disk file'
         result = set()
         if self.file_exists():
-            for k, v in self.items():
+            for k, v in list(self.items()):
                 # assert k not in result, 'duplicate key: %s' % str(k)
                 result.add(k)
         return result
@@ -82,7 +82,7 @@ class Test(unittest.TestCase):
         dd.close()
         dd = DiskDictionary(path)
         found = 0
-        for k, v in dd.items():
+        for k, v in list(dd.items()):
             found += 1
 
             self.assertTrue(isinstance(k, str))
