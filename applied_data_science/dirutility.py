@@ -46,7 +46,8 @@ def always_valid_filename(s, replacement_char='-'):
     '''return a new string that is acceeptable to Linux, MacOS, and Linux
     ref: https://en.wikipedia.org/wiki/Filename
     '''
-    table = string.maketrans(_invalid_characters, replacement_char * len(_invalid_characters))
+    # ref: https://docs.python.org/3.6/library/stdtypes.html?highlight=maketrans#str.maketrans
+    table = str.maketrans(_invalid_characters, replacement_char * len(_invalid_characters))
     return s.translate(table)
 
 
